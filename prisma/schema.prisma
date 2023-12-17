@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String        @id @default(uuid()) // guaranteeing all user ids will be a unique string
+  createdAt   DateTime      @default(now())
+  username    String        @unique
+  password    String
+  application Application[]
+}
+
+model Application {
+  id             String    @id @default(uuid())
+  createdAt      DateTime  @default(now())
+  jobTitle       String    @db.VarChar(255)
+  companyName    String    @db.VarChar(255)
+  status         Status    @default(APPLIED)
+  imageUrl       String    @default("needtosetplaceholder")
+  appliedDate    DateTime? @default(now()) // not necessary to input but defaults to now
+  contactDetails String
+  userId         String
+  User           User      @relation(fields: [userId], references: [id])
+}
+
+enum Status {
+  APPLIED
+  INTERVIEW_SCHEDULED
+  INTERVIEW_COMPLETED
+  SKILL_ASSESSMENT
+  OFFER_ACCEPTED
+  OFFER_DECLINED
+  WITHDRAWN
+}
