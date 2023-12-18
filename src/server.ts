@@ -13,4 +13,9 @@ app.use("/api", protect, apiRouter);
 app.post("/signup", createNewUser);
 app.post("/signin", signin);
 
+app.use("/*", (error, req, res, next) => {
+  if (error.message === "Error adding new application") {
+    res.status(400).send({ message: "Bad Request" });
+  }
+});
 export default app;
