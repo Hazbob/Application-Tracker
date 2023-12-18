@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id          String        @id @default(uuid()) // guaranteeing all user ids will be a unique string
+  id          String        @id @default(uuid())
   createdAt   DateTime      @default(now())
   username    String        @unique
   password    String
@@ -24,9 +24,9 @@ model Application {
   jobTitle       String    @db.VarChar(255)
   companyName    String    @db.VarChar(255)
   status         Status    @default(APPLIED)
-  imageUrl       String    @default("needtosetplaceholder")
-  appliedDate    DateTime? @default(now()) // not necessary to input but defaults to now
-  contactDetails String
+  imageUrl       String?
+  appliedDate    DateTime? @default(now())
+  contactDetails String?
   userId         String
   User           User      @relation(fields: [userId], references: [id])
 }

@@ -1,14 +1,6 @@
 import { Router } from "express";
-import { Request } from "express";
+import { UserRequest } from "../types/types";
 //type for the request TODO make this into a type file
-export interface User {
-  id: string;
-  username: string;
-  iat: number;
-}
-interface UserRequest extends Request {
-  user?: User;
-}
 
 const userRouter = Router();
 
