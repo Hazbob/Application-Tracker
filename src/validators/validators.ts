@@ -1,8 +1,16 @@
-import { body, validationResult } from "express-validator";
+import { body, param, validationResult } from "express-validator";
 
 export const postAppValidators = [
-  body("jobTitle").exists().isString(),
-  body("companyName").exists().isString(),
+  body("jobTitle")
+    .exists()
+    .isString()
+    .isLength({ min: 1 })
+    .withMessage("Invalid job title"),
+  body("companyName")
+    .exists()
+    .isString()
+    .isLength({ min: 1 })
+    .withMessage("Invalid company name"),
   body("status")
     .isIn([
       "APPLIED",
@@ -13,13 +21,17 @@ export const postAppValidators = [
       "OFFER_DECLINED",
       "WITHDRAWN",
     ])
-    .optional(),
-  body("contactDetails").isString().optional(),
+    .optional()
+    .withMessage("Invalid status"),
+  body("contactDetails")
+    .isString()
+    .optional()
+    .withMessage("Invalid contact details"),
 ];
 
 export const putAppValidators = [
-  body("jobTitle").isString().optional(),
-  body("companyName").isString().optional(),
+  body("jobTitle").isString().optional().withMessage("Invalid job title"),
+  body("companyName").isString().optional().withMessage("Invalid company name"),
   body("status")
     .isIn([
       "APPLIED",
@@ -30,16 +42,24 @@ export const putAppValidators = [
       "OFFER_DECLINED",
       "WITHDRAWN",
     ])
-    .optional(),
-  body("contactDetails").isString().optional(),
-  body("imageUrl").isString().optional(),
-  body("appliedDate").isDate().optional(),
+    .optional()
+    .withMessage("Invalid status"),
+  body("contactDetails")
+    .isString()
+    .optional()
+    .withMessage("Invalid contact details"),
+  body("imageUrl").isString().optional().withMessage("Invalid image URL"),
+  body("appliedDate").isDate().optional().withMessage("Invalid applied date"),
+];
+
+export const idParamValidators = [
+  param("id").isUUID().withMessage("Invalid UUID format"),
 ];
 
 export function handlePostAppVal(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    res.status(400).send({ errors: errors.array() });
+    return res.status(400).send({ errors: errors.array() });
   }
   next();
 }

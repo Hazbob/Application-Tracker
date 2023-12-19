@@ -15,13 +15,16 @@ app.post("/signin", signin);
 
 app.use("/*", (error, req, res, next) => {
   if (error.message === "Error adding new application") {
-    res.status(400).send({ message: "Bad Request" });
+    res.status(400).send({ message: error.message });
   }
   if (error.message === "No Applications Found!") {
     res.status(404).send({ message: error.message });
   }
   if (error.name === "PrismaClientValidationError") {
-    res.status(400).send({ message: "Bad Request" });
+    res.status(400).send({ message: error.name });
+  }
+  if (error.message === "Error deleting application") {
+    res.status(404).send({ message: error.message });
   } else {
     res.status(500).send({ message: error });
   }
