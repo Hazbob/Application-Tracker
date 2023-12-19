@@ -6,6 +6,7 @@ import {
   postAppValidators,
   putAppValidators,
 } from "../validators/validators";
+import { validationResult } from "express-validator";
 const applicationRouter = Router();
 /**
  * POST application: creates new job application attached to the logged in user

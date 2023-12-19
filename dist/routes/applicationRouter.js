@@ -113,7 +113,9 @@ applicationRouter.get("/", function (req, res, next) { return __awaiter(void 0, 
         }
     });
 }); });
-applicationRouter.put("/", function (req, res) { });
+/*
+ * PUT route for updating existing Job Applications*/
+applicationRouter.put("/", validators_1.putAppValidators, validators_1.handlePostAppVal, function (req, res) { });
 applicationRouter.delete("/:id", function (req, res) { });
 exports.default = applicationRouter;
 //# sourceMappingURL=applicationRouter.js.map

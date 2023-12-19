@@ -17,14 +17,6 @@ export const postAppValidators = [
   body("contactDetails").isString().optional(),
 ];
 
-export function handlePostAppVal(req, res, next) {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    res.status(400).send({ errors: errors.array() });
-  }
-  next();
-}
-
 export const putAppValidators = [
   body("jobTitle").isString().optional(),
   body("companyName").isString().optional(),
