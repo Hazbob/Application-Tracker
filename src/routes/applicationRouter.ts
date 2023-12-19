@@ -1,13 +1,15 @@
 import { Router, Response, application } from "express";
 import prisma from "../db";
-import { UserRequest, ApplicationType } from "../types/types";
+
 import {
   handlePostAppVal,
+  idParamValidators,
   postAppValidators,
   putAppValidators,
 } from "../validators/validators";
-import { validationResult } from "express-validator";
+
 import {
+  handleDeleteApplication,
   handleEditApplication,
   handleGetApplication,
   handlePostApplication,
@@ -31,8 +33,21 @@ applicationRouter.post(
 applicationRouter.get("/", handleGetApplication);
 /*
  * PUT route for updating existing Job Applications*/
-applicationRouter.put("/:id", putAppValidators, handleEditApplication);
+applicationRouter.put(
+  "/:id",
+  putAppValidators,
+  idParamValidators,
+  handlePostAppVal,
+  handleEditApplication,
+);
 
-applicationRouter.delete("/:id", (req, res) => {});
+/*
+ * DELETE route for deleting a specific job application*/
+applicationRouter.delete(
+  "/:id",
+  idParamValidators,
+  handlePostAppVal,
+  handleDeleteApplication,
+);
 
 export default applicationRouter;

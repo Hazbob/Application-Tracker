@@ -100,3 +100,23 @@ export async function handlePostApplication(
     next(error);
   }
 }
+
+export async function handleDeleteApplication(req, res, next) {
+  const applicationId = req.params.id;
+  if (!applicationId || typeof applicationId !== "string") {
+    return res.status(400).send("Invalid application ID");
+  }
+  try {
+    const deletedApplication = await prisma.application.delete({
+      where: {
+        id: applicationId,
+      },
+    });
+    if (!deletedApplication) {
+      throw new Error("Error deleting application");
+    }
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+}
