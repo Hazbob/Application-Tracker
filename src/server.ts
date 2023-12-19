@@ -17,5 +17,10 @@ app.use("/*", (error, req, res, next) => {
   if (error.message === "Error adding new application") {
     res.status(400).send({ message: "Bad Request" });
   }
+  if (error.message === "No Applications Found!") {
+    res.status(404).send({ message: error.message });
+  } else {
+    console.error(error);
+  }
 });
 export default app;

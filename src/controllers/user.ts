@@ -10,7 +10,7 @@ export const createNewUser = async function (req, res) {
     },
   });
   const token = createJWT(user);
-  res.status(201).json({ token });
+  return res.status(201).json({ token });
 };
 
 export const signin = async function (req, res) {
@@ -22,8 +22,7 @@ export const signin = async function (req, res) {
 
   const isValid = await comparePasswords(req.body.password, user.password);
   if (!isValid) {
-    res.status(401).json({ message: "Not Authorised" });
-    return;
+    return res.status(401).json({ message: "Not Authorised" });
   }
 
   const token = createJWT(user);

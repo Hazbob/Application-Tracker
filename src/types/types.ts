@@ -8,3 +8,10 @@ export interface User {
 export interface UserRequest extends Request {
   user?: User;
 }
+
+export interface ApplicationType {
+  jobTitle: string;
+  companyName: string;
+  imageUrl: string;
+  userId: string;
+}

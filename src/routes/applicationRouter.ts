@@ -1,8 +1,15 @@
 import { Router, Response } from "express";
 import prisma from "../db";
-import { UserRequest } from "../types/types";
-import { handlePostAppVal, postAppValidators } from "../validators/validators";
+import { UserRequest, ApplicationType } from "../types/types";
+import {
+  handlePostAppVal,
+  postAppValidators,
+  putAppValidators,
+} from "../validators/validators";
 const applicationRouter = Router();
+/**
+ * POST application: creates new job application attached to the logged in user
+ */
 
 applicationRouter.post(
   "/",
@@ -10,6 +17,7 @@ applicationRouter.post(
   handlePostAppVal,
   async (req: UserRequest, res: Response, next) => {
     try {
+      if (!req.user.id) res.status(401).send({ message: "Not Authorised" });
       const application = await prisma.application.create({
         data: {
           jobTitle: req.body.jobTitle,
@@ -30,6 +38,10 @@ applicationRouter.post(
     }
   },
 );
+
+/*
+ * GET applications : this retrieves the applications belonging to the logged in user
+ * */
 applicationRouter.get("/", async (req: UserRequest, res: Response, next) => {
   try {
     const applications = await prisma.application.findMany({
@@ -44,15 +56,23 @@ applicationRouter.get("/", async (req: UserRequest, res: Response, next) => {
         status: true,
       },
     });
-    if (!applications) {
-      throw new Error("No applications Found!");
+
+    if (applications.length === 0) {
+      throw new Error("No applications Found");
     }
     return res.status(200).send({ applications: applications });
   } catch (error) {
     next(error);
   }
 });
-applicationRouter.put("/", (req, res) => {});
-applicationRouter.delete("/", (req, res) => {});
+/*
+ * PUT route for updating existing Job Applications*/
+applicationRouter.put(
+  "/",
+  putAppValidators,
+  handlePostAppVal,
+  (req, res) => {},
+);
+applicationRouter.delete("/:id", (req, res) => {});
 
 export default applicationRouter;

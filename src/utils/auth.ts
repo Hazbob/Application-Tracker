@@ -9,10 +9,11 @@ export const hashPassword = function (password) {
   return bcrypt.hash(password, 5);
 };
 
-export const createJWT = function (user) {
+export const createJWT = function (user: { id: string; username: string }) {
   const token = jwt.sign(
     { id: user.id, username: user.username }, //payload with unique user info
     process.env.JWT_SECRET, //secret string which is used for decoding
+    { expiresIn: "24h" },
   );
   return token;
 };
