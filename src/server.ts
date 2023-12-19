@@ -19,8 +19,11 @@ app.use("/*", (error, req, res, next) => {
   }
   if (error.message === "No Applications Found!") {
     res.status(404).send({ message: error.message });
+  }
+  if (error.name === "PrismaClientValidationError") {
+    res.status(400).send({ message: "Bad Request" });
   } else {
-    console.error(error);
+    res.status(500).send({ message: error });
   }
 });
 export default app;
