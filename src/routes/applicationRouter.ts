@@ -2,6 +2,7 @@ import { Router, Response, application } from "express";
 import prisma from "../db";
 
 import {
+  checkNotEmptyBody,
   handlePostAppVal,
   idParamValidators,
   postAppValidators,
@@ -22,6 +23,7 @@ const applicationRouter = Router();
 
 applicationRouter.post(
   "/",
+  checkNotEmptyBody,
   postAppValidators,
   handlePostAppVal,
   handlePostApplication,
@@ -37,6 +39,7 @@ applicationRouter.put(
   "/:id",
   putAppValidators,
   idParamValidators,
+  checkNotEmptyBody,
   handlePostAppVal,
   handleEditApplication,
 );

@@ -1,5 +1,5 @@
 import { UserRequest } from "../types/types";
-import { Response, NextFunction } from "express";
+import { Response, NextFunction, application } from "express";
 import prisma from "../db";
 /*
  *
@@ -36,7 +36,7 @@ export async function handleEditApplication(
     if (!updateApplication) {
       throw new Error("Error updating application");
     }
-    res.status(200).send({ updateApplication });
+    res.status(200).send({ data: application });
   } catch (error) {
     next(error);
   }
@@ -87,15 +87,15 @@ export async function handlePostApplication(
         companyName: req.body.companyName,
         imageUrl: req.body.imageUrl,
         userId: req.user.id,
+        notes: req.body.notes,
+        status: req.body.status,
       },
     });
 
     if (!application) {
       throw new Error("Error adding new application");
     }
-    return res
-      .status(201)
-      .send({ message: "New Application Added, Good Luck!" });
+    return res.status(201).send({ data: application });
   } catch (error) {
     next(error);
   }
