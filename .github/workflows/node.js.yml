@@ -33,9 +33,7 @@ jobs:
         echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
         echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
         echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
-    - run: npm cache clean --force
-    - run: npm install
-    - run: npm install @prisma/client
+    - run: npm ci
     - run: npx prisma generate
     - run: npm run build --if-present
     - run: npm test
