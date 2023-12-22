@@ -1,6 +1,5 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -25,6 +24,7 @@ model Application {
   companyName    String    @db.VarChar(255)
   status         Status    @default(APPLIED)
   imageUrl       String?
+  notes          String?
   appliedDate    DateTime? @default(now())
   contactDetails String?
   userId         String

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { UserRequest } from "../types/types";
-//type for the request TODO make this into a type file
+import errorRouter from "./errorRouter";
 
 const userRouter = Router();
 
@@ -8,5 +8,7 @@ userRouter.get("/", (req: UserRequest, res) => {});
 userRouter.post("/", (req, res) => {});
 userRouter.put("/", (req, res) => {});
 userRouter.delete("/", (req, res) => {});
+
+userRouter.use(errorRouter);
 
 export default userRouter;

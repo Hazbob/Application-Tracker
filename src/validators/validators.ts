@@ -27,6 +27,7 @@ export const postAppValidators = [
     .isString()
     .optional()
     .withMessage("Invalid contact details"),
+  body("imageUrl").isString().optional().withMessage("Invalid image URL"),
 ];
 
 export const putAppValidators = [
@@ -55,6 +56,13 @@ export const putAppValidators = [
 export const idParamValidators = [
   param("id").isUUID().withMessage("Invalid UUID format"),
 ];
+
+export const checkNotEmptyBody = body().custom((value, { req }) => {
+  if (Object.keys(req.body).length === 0) {
+    throw new Error("Request body cannot be empty");
+  }
+  return true;
+});
 
 export function handlePostAppVal(req, res, next) {
   const errors = validationResult(req);
