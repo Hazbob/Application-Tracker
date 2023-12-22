@@ -258,7 +258,6 @@ describe("PUT /api/app", () => {
       .send({ appliedDate: 123 })
       .set("Authorization", `Bearer ${testToken}`)
       .expect(400);
-
     expect(res.body.errors[0].msg).toBe("Invalid applied date");
   });
 });
