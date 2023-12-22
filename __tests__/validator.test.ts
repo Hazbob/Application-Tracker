@@ -10,8 +10,6 @@ beforeAll(async () => {
   testToken = await generateJWTForTest();
 });
 
-console.log(testProductId);
-
 /*
  *Unit Tests for input validators
  * */
