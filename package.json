@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test jest",
-    "dev": "nodemon src/index.ts"
+    "test": "jest",
+    "dev": "nodemon src/index.ts",
+    "build":"tsc"
   },
   "keywords": [],
   "author": "",
