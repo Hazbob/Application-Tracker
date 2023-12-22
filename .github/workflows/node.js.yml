@@ -35,6 +35,8 @@ jobs:
         echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
     
     - run: npm ci
+    - run: npm install @prisma/client
+    - run: npx prisma generate
     - run: npm run build --if-present
     - run: npm test
     - run: npm ci || cat /home/runner/.npm/_logs/*-debug.log
