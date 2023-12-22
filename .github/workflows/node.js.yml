@@ -34,7 +34,7 @@ jobs:
         echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
         echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
     - run: npm cache clean --force
-    - run: npm ci
+    - run: npm install
     - run: npm install @prisma/client
     - run: npx prisma generate
     - run: npm run build --if-present
