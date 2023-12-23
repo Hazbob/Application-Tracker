@@ -19,6 +19,7 @@ jobs:
           POSTGRES_DB: job_test
           POSTGRES_USER: harryrobinson
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         ports:
           - 5432:5432
         # Set health checks to wait until postgres is ready
