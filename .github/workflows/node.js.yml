@@ -38,8 +38,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: check env
-    - name: Display DATABASE_URL
-      run: echo "Database URL is $DATABASE_URL"
+      run: |
+                echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
+                echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+                echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
+                echo "Database URL is $DATABASE_URL"
 
     - name: Run Prisma migrations
       run: npx prisma migrate deploy
