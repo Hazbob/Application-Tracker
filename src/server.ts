@@ -4,6 +4,7 @@ import apiRouter from "./routes/apiRouter";
 import { protect } from "./utils/auth";
 import { createNewUser, signin } from "./controllers/user";
 import errorRouter from "./routes/errorRouter";
+
 const app = express();
 app.use(morgan("dev"));
 app.use(express.json());
