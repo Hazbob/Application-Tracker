@@ -4,7 +4,7 @@ import { generateJWTForTest } from "../src/utils/testUtils";
 import prisma from "../src/db";
 let testToken = "";
 let testProductId;
-beforeAll(async () => {
+beforeEach(async () => {
   await prisma.application.deleteMany({});
   await prisma.user.deleteMany({});
   testToken = await generateJWTForTest();
