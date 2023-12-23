@@ -32,7 +32,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -49,10 +49,7 @@ jobs:
         echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
         echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
         echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
-    - run: npm cache clean --force
     - run: npm install
-    - run: npm install @prisma/client
-    - run: npx prisma generate
     - run: npm run build --if-present
     - run: npm test
     - run: npm ci || cat /home/runner/.npm/_logs/*-debug.log
