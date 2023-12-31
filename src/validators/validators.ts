@@ -50,7 +50,12 @@ export const putAppValidators = [
     .optional()
     .withMessage("Invalid contact details"),
   body("imageUrl").isString().optional().withMessage("Invalid image URL"),
-  body("appliedDate").isDate().optional().withMessage("Invalid applied date"),
+  body("appliedDate")
+    .isDate({
+      format: "DD/MM/YYYY",
+    })
+    .optional()
+    .withMessage("Invalid applied date"),
 ];
 
 export const idParamValidators = [
