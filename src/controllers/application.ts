@@ -40,7 +40,6 @@ export async function handleEditApplication(
     }
     res.status(200).send({ data: updateApplication });
   } catch (error) {
-    console.error(error);
     next(error);
   }
 }
