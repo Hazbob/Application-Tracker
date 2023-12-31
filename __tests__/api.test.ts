@@ -1,23 +1,29 @@
 import request from "supertest";
 import app from "../src/server";
-import { generateJWTForTest } from "../src/utils/testUtils";
 import prisma from "../src/db";
-let testToken = "";
-let testProductId;
+import seed from "../prisma/seed";
+const validStatuses = [
+  "APPLIED",
+  "INTERVIEW_SCHEDULED",
+  "INTERVIEW_COMPLETED",
+  "SKILL_ASSESSMENT",
+  "OFFER_ACCEPTED",
+  "OFFER_DECLINED",
+  "WITHDRAWN",
+];
+let applicationId: string;
+let testToken: string;
 beforeEach(async () => {
   await prisma.application.deleteMany({});
   await prisma.user.deleteMany({});
-  testToken = await generateJWTForTest();
+  const seedData = await seed();
+  applicationId = seedData.applicationId;
+  testToken = seedData.testToken;
+
+  // testToken = await generateJWTForTest();
 });
 
-/*
- *Unit Tests for input validators
- * */
-
-describe("POST /API/APP", () => {
-  /*
-   *
-   * job title validation*/
+describe("POST applications", () => {
   it("should return an error if the request body is empty", async () => {
     const res = await request(app)
       .post("/api/app")
@@ -58,9 +64,6 @@ describe("POST /API/APP", () => {
       .expect(400);
     expect(res.body.errors[0].msg).toBe("Invalid value");
   });
-  /*
-   *
-   * company name validation*/
   it("should return an error if the companyName is missing", async () => {
     const res = await request(app)
       .post("/api/app")
@@ -93,9 +96,6 @@ describe("POST /API/APP", () => {
       .expect(400);
     expect(res.body.errors[0].msg).toBe("Invalid value");
   });
-  /*
-   *
-   * STATUS validation*/
   it("should not throw an error if the status is left out", async () => {
     const res = await request(app)
       .post("/api/app")
@@ -154,20 +154,33 @@ describe("POST /API/APP", () => {
     });
   });
 
-  /*
-   *
-   * contactDetails validation*/
-  it("should not throw an error if contact details is left out", async () => {
-    const res = await request(app)
-      .post("/api/app")
-      .send({
+  it.each(validStatuses)(
+    "should not throw an error if a valid input for status",
+    async (status) => {
+      const res = await request(app)
+        .post("/api/app")
+        .send({
+          jobTitle: "mockTitle",
+          companyName: "mockCompany",
+          status: status,
+        })
+        .set("Authorization", `Bearer ${testToken}`)
+        .expect(201);
+      expect(res.body.data).toMatchObject({
+        id: expect.any(String),
+        createdAt: expect.any(String),
         jobTitle: "mockTitle",
         companyName: "mockCompany",
-        status: "INTERVIEW_SCHEDULED",
-      })
-      .set("Authorization", `Bearer ${testToken}`)
-      .expect(201);
-  });
+        status: status,
+        imageUrl: null,
+        notes: null,
+        appliedDate: expect.any(String),
+        contactDetails: null,
+        userId: expect.any(String),
+      });
+    },
+  );
+
   it("should not throw an error if contact details is left out", async () => {
     const res = await request(app)
       .post("/api/app")
@@ -186,15 +199,15 @@ describe("POST /API/APP", () => {
         jobTitle: "mockTitle",
         companyName: "mockCompany",
         status: "INTERVIEW_SCHEDULED",
-        contactDetails: "email on mock@email.com",
+        contactDetails: "mock@email.com",
       })
       .set("Authorization", `Bearer ${testToken}`)
       .expect(201);
   });
 });
 /*
- *
- * PUT REQUEST VALIDATORS*/
+PUT applications
+ */
 
 describe("PUT /api/app", () => {
   it("should throw an error if the property doesnt exist ", async () => {
@@ -258,4 +271,87 @@ describe("PUT /api/app", () => {
       .expect(400);
     expect(res.body.errors[0].msg).toBe("Invalid applied date");
   });
+  it("should response with 200 for successful update and return the update application ", async () => {
+    const res = await request(app)
+      .put(`/api/app/${applicationId}`)
+      .send({ appliedDate: "23/12/2023" })
+      .set("Authorization", `Bearer ${testToken}`)
+      .expect(200);
+    expect(res.body.data).toMatchObject({
+      jobTitle: "mockApp",
+      companyName: "mockCompany",
+      status: "APPLIED",
+      imageUrl: null,
+      appliedDate: "2023-12-23T00:00:00.000Z", // this is the update property
+      contactDetails: null,
+    });
+  });
+  it.each(validStatuses)(
+    "should respond with 200 for updating to a valid status and update the database to represent this ",
+    async (status) => {
+      const res = await request(app)
+        .put(`/api/app/${applicationId}`)
+        .send({ status: status })
+        .set("Authorization", `Bearer ${testToken}`)
+        .expect(200);
+      expect(res.body.data).toMatchObject({
+        jobTitle: "mockApp",
+        companyName: "mockCompany",
+        status: status,
+        imageUrl: null,
+        appliedDate: expect.any(String), // this is the update property
+        contactDetails: null,
+      });
+      const updatedApp = await prisma.application.findUnique({
+        where: {
+          id: applicationId,
+        },
+        select: {
+          status: true,
+        },
+      });
+      expect(updatedApp.status).toBe(status); // checks the database has updated the info
+    },
+  );
+  const validChanges = [
+    { jobTitle: "changedJobTitle" },
+    { companyName: "changedCompanyName" },
+    { contactDetails: "email: change@email.com" },
+    { imageUrl: "changedImageURL" },
+  ];
+  it.each(validChanges)(
+    "should respond with 200 for updating valid properties ",
+    async (change) => {
+      const res = await request(app)
+        .put(`/api/app/${applicationId}`)
+        .send(change)
+        .set("Authorization", `Bearer ${testToken}`)
+        .expect(200);
+
+      console.log(res.body.data);
+      expect(res.body.data).toMatchObject({
+        jobTitle: "mockApp",
+        companyName: "mockCompany",
+        status: "APPLIED",
+        imageUrl: null,
+        appliedDate: expect.any(String), // this is the update property
+        contactDetails: null,
+        ...change,
+      });
+      const updatedApp = await prisma.application.findUnique({
+        where: {
+          id: applicationId,
+        },
+        select: {
+          status: true,
+          jobTitle: true,
+          companyName: true,
+          contactDetails: true,
+          imageUrl: true,
+        },
+      });
+      const [key, value] = Object.entries(change)[0];
+      expect(updatedApp[key]).toBe(value); // checks the database has updated the info
+    },
+  );
 });

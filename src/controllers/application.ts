@@ -1,6 +1,7 @@
 import { UserRequest } from "../types/types";
 import { Response, NextFunction, application } from "express";
 import prisma from "../db";
+import formatDateStringToISO from "../utils/api.utils";
 /*
  *
  * PUT application handler*/
@@ -30,14 +31,16 @@ export async function handleEditApplication(
         status: req.body.status,
         contactDetails: req.body.contactDetails,
         imageUrl: req.body.imageUrl,
-        appliedDate: req.body.appliedDate,
+        appliedDate: formatDateStringToISO(req.body.appliedDate),
       },
     });
+
     if (!updateApplication) {
       throw new Error("Error updating application");
     }
-    res.status(200).send({ data: application });
+    res.status(200).send({ data: updateApplication });
   } catch (error) {
+    console.error(error);
     next(error);
   }
 }
@@ -66,7 +69,7 @@ export async function handleGetApplication(
     if (applications.length === 0) {
       throw new Error("No applications Found");
     }
-    return res.status(200).send({ applications: applications });
+    return res.status(200).send({ data: applications });
   } catch (error) {
     next(error);
   }
