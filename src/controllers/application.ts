@@ -2,6 +2,7 @@ import { UserRequest } from "../types/types";
 import { Response, NextFunction, application } from "express";
 import prisma from "../db";
 import formatDateStringToISO from "../utils/api.utils";
+import app from "../server";
 /*
  *
  * PUT application handler*/
@@ -64,11 +65,11 @@ export async function handleGetApplication(
         status: true,
       },
     });
-
     if (applications.length === 0) {
-      throw new Error("No applications Found");
+      throw new Error("No applications found");
+    } else {
+      return res.status(200).send({ data: applications });
     }
-    return res.status(200).send({ data: applications });
   } catch (error) {
     next(error);
   }

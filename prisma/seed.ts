@@ -1,9 +1,12 @@
 import prisma from "../src/db";
-import { generateJWTForTest } from "../src/utils/testUtils";
+import { createSecondUser, generateJWTForTest } from "../src/utils/testUtils";
 
 export default async function seed() {
   let testToken: string;
+  let secondtestToken: string;
   testToken = await generateJWTForTest();
+  secondtestToken = await createSecondUser();
+
   const user = await prisma.user.findUnique({
     where: {
       username: "mockUser",
@@ -19,6 +22,25 @@ export default async function seed() {
       userId: user.id,
     },
   });
+  const secondUser = await prisma.user.findUnique({
+    where: {
+      username: "secondMockUser",
+    },
+    select: {
+      id: true,
+    },
+  });
+  const secondApplication = await prisma.application.create({
+    data: {
+      jobTitle: "mockAppTwo",
+      companyName: "mockCompanyTwo",
+      userId: secondUser.id,
+    },
+  });
 
-  return { testToken: testToken, applicationId: application.id };
+  return {
+    testToken: testToken,
+    applicationId: application.id,
+    secondApplicationId: secondApplication.id,
+  };
 }
