@@ -481,11 +481,10 @@ describe("DELETE /api/app", () => {
   });
   it("should throw an error if valid uuid is input put the uuid doesnt exist in the database", async () => {
     const res = await request(app)
-      .delete(`/api/app/123e4567-e89b-12d3-a456-426614174000`) // application that belongs to user two
-      .set("Authorization", `Bearer ${testToken}`) // test token that belongs to user one
+      .delete(`/api/app/123e4567-e89b-12d3-a456-426614174000`)
+      .set("Authorization", `Bearer ${testToken}`)
       .send()
-      .expect(404); //status sent from handler
-    //check response body is empty
+      .expect(404);
     expect(res.body.message).toBe("Record to delete does not exist.");
   });
 });
