@@ -470,4 +470,22 @@ describe("DELETE /api/app", () => {
     });
     expect(application).toBeTruthy(); // this returns null if doesnt exist and therefore truthy if it does exist
   });
+  it("should throw an error if application id is not uuid and return with 400 status", async () => {
+    const res = await request(app)
+      .delete(`/api/app/theseareuuidsandthereforethiswillneverexistasaid`)
+      .set("Authorization", `Bearer ${testToken}`)
+      .send()
+      .expect(400); //status sent from handler
+    //check response body is empty
+    expect(res.body.errors[0].msg).toBe("Invalid UUID format");
+  });
+  it("should throw an error if valid uuid is input put the uuid doesnt exist in the database", async () => {
+    const res = await request(app)
+      .delete(`/api/app/123e4567-e89b-12d3-a456-426614174000`) // application that belongs to user two
+      .set("Authorization", `Bearer ${testToken}`) // test token that belongs to user one
+      .send()
+      .expect(404); //status sent from handler
+    //check response body is empty
+    expect(res.body.message).toBe("Record to delete does not exist.");
+  });
 });
