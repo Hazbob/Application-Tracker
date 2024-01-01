@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "STAGE=test jest",
+    "test": "STAGE=test jest --runInBand",
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "prepare": "husky install"

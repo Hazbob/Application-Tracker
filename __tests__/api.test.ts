@@ -439,5 +439,3 @@ describe("GET /api/app - this should get all applications of the logged in user"
     expect(application.userId).toBe(user.id); // checks the userId on the application is same as user the token belongs to
   });
 });
-
-describe("DELETE /api/app");
