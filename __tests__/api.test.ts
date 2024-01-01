@@ -3,6 +3,7 @@ import app from "../src/server";
 import prisma from "../src/db";
 import seed from "../prisma/seed";
 import { describe } from "node:test";
+import exp from "node:constants";
 const validStatuses = [
   "APPLIED",
   "INTERVIEW_SCHEDULED",
@@ -437,5 +438,36 @@ describe("GET /api/app - this should get all applications of the logged in user"
     });
     //compares logged-in user to user attached to application
     expect(application.userId).toBe(user.id); // checks the userId on the application is same as user the token belongs to
+  });
+});
+
+describe("DELETE /api/app", () => {
+  it("should delete the application in the path from db, return status 204, have no res body.", async () => {
+    const res = await request(app)
+      .delete(`/api/app/${applicationId}`) // application that belongs to user one
+      .set("Authorization", `Bearer ${testToken}`) // test token that belongs to user one\
+      .send()
+      .expect(204); //status sent from handler
+    //check response body is empty
+    expect(res.body).toMatchObject({});
+    //check if it exists in db below
+    const application = await prisma.application.findFirst({
+      where: { id: applicationId },
+    });
+    expect(application).toBeFalsy();
+  });
+  it("should throw an error if application doesnt belong to user", async () => {
+    const res = await request(app)
+      .delete(`/api/app/${secondApplicationId}`) // application that belongs to user two
+      .set("Authorization", `Bearer ${testToken}`) // test token that belongs to user one
+      .send()
+      .expect(404); //status sent from handler
+    //check response body is empty
+    expect(res.body.message).toBe("Record to delete does not exist.");
+    //check if it exists in db below - should exist and not be deleted
+    const application = await prisma.application.findFirst({
+      where: { id: applicationId },
+    });
+    expect(application).toBeTruthy(); // this returns null if doesnt exist and therefore truthy if it does exist
   });
 });
