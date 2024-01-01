@@ -113,6 +113,7 @@ export async function handleDeleteApplication(req, res, next) {
     const deletedApplication = await prisma.application.delete({
       where: {
         id: applicationId,
+        userId: req.user.id,
       },
     });
     if (!deletedApplication) {
