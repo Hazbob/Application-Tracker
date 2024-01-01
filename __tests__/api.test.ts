@@ -2,6 +2,7 @@ import request from "supertest";
 import app from "../src/server";
 import prisma from "../src/db";
 import seed from "../prisma/seed";
+import { describe } from "node:test";
 const validStatuses = [
   "APPLIED",
   "INTERVIEW_SCHEDULED",
@@ -13,14 +14,34 @@ const validStatuses = [
 ];
 let applicationId: string;
 let testToken: string;
+let secondApplicationId: string;
 beforeEach(async () => {
   await prisma.application.deleteMany({});
   await prisma.user.deleteMany({});
   const seedData = await seed();
   applicationId = seedData.applicationId;
   testToken = seedData.testToken;
+  secondApplicationId = seedData.secondApplicationId;
 
   // testToken = await generateJWTForTest();
+});
+
+describe("Unauthorised Checks - checks each protected endpoint for unauth response", () => {
+  const endpoints = [
+    { method: "get", endpoint: "/api/app" },
+    { method: "post", endpoint: "/api/app" },
+    { method: "put", endpoint: `/api/app/${applicationId}` },
+    { method: "delete", endpoint: `/api/app${applicationId}` },
+  ];
+  it.each(endpoints)(
+    "should respond with status 401(unauthorised)",
+    async (endpoint) => {
+      const res = await request(app)
+        [endpoint.method](endpoint.endpoint)
+        .set("Authorization", `Bearer dontexist`)
+        .expect(401);
+    },
+  );
 });
 
 describe("POST applications", () => {
@@ -328,7 +349,6 @@ describe("PUT /api/app", () => {
         .set("Authorization", `Bearer ${testToken}`)
         .expect(200);
 
-      console.log(res.body.data);
       expect(res.body.data).toMatchObject({
         jobTitle: "mockApp",
         companyName: "mockCompany",
@@ -354,4 +374,68 @@ describe("PUT /api/app", () => {
       expect(updatedApp[key]).toBe(value); // checks the database has updated the info
     },
   );
+  it("should throw an error if you try to edit an application that doesnt belong to the logged in user", async () => {
+    const res = await request(app)
+      .put(`/api/app/${secondApplicationId}`) //this application doesnt belong to the user
+      .send({ companyName: "changingTheName" })
+      .set("Authorization", `Bearer ${testToken}`) // this is the test token to different user than owner
+      .expect(400);
+  });
+});
+
+describe("GET /api/app - this should get all applications of the logged in user", () => {
+  it("should get the applications of the logged in user", async () => {
+    const res = await request(app)
+      .get("/api/app")
+      .set("Authorization", `Bearer ${testToken}`)
+      .expect(200);
+    expect(res.body.data.length).not.toBe(0);
+    const application = await prisma.application.findFirst({
+      where: {
+        id: res.body.data[0].id,
+      },
+      select: {
+        userId: true,
+      },
+    });
+    const userId = await prisma.user.findUnique({
+      where: {
+        id: application.userId,
+      },
+      select: {
+        username: true,
+      },
+    });
+    expect(userId.username).toBe("mockUser"); //usernames are unique so this is to check it belongs to the test user
+  });
+
+  it("should return error 404 and an error message saying no applications found if the user doesnt no applications exist", async () => {
+    //code to make sure there are no applications
+    await prisma.application.deleteMany({});
+    const res = await request(app)
+      .get("/api/app")
+      .set("Authorization", `Bearer ${testToken}`)
+      .expect(404);
+    expect(res.body.message).toBe("No applications found");
+  });
+
+  it("should only return the applications belonging to the logged in user", async () => {
+    //gets applications
+    const res = await request(app)
+      .get("/api/app")
+      .set("Authorization", `Bearer ${testToken}`)
+      .expect(200);
+    //gets user id attached to the above application
+    const application = await prisma.application.findUnique({
+      where: { id: res.body.data[0].id },
+      select: { userId: true },
+    });
+    //gets id of logged in user
+    const user = await prisma.user.findUnique({
+      where: { username: "mockUser" }, // this is the username of the user im using with testToken above
+      select: { id: true },
+    });
+    //compares logged-in user to user attached to application
+    expect(application.userId).toBe(user.id); // checks the userId on the application is same as user the token belongs to
+  });
 });
