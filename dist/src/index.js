@@ -32,6 +32,6 @@ dotenv.config({
 });
 var server_1 = __importDefault(require("./server"));
 server_1.default.listen(process.env.port, function () {
-    console.log("listening");
+    console.log("Listening on port ".concat(process.env.PORT));
 });
 //# sourceMappingURL=index.js.map
