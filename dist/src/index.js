@@ -27,12 +27,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var dotenv = __importStar(require("dotenv"));
-var config_1 = __importDefault(require("./config"));
 dotenv.config({
     path: "/Users/harryrobinson/Desktop/projects/application-tracker/Application-Tracker/.env.test",
 });
 var server_1 = __importDefault(require("./server"));
-server_1.default.listen(config_1.default.port, function () {
-    console.log("listening on port 3001");
+server_1.default.listen(process.env.port, function () {
+    console.log("listening");
 });
 //# sourceMappingURL=index.js.map

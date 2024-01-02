@@ -5,5 +5,5 @@ dotenv.config({
 import app from "./server";
 
 app.listen(process.env.port, () => {
-  console.log("listening on port 3001");
+  console.log("listening");
 });
