@@ -136,7 +136,6 @@ describe("POST applications", () => {
       imageUrl: null,
       notes: null,
       appliedDate: expect.any(String),
-      contactDetails: null,
       userId: expect.any(String),
     });
   });
@@ -171,7 +170,6 @@ describe("POST applications", () => {
       imageUrl: null,
       notes: null,
       appliedDate: expect.any(String),
-      contactDetails: null,
       userId: expect.any(String),
     });
   });
@@ -197,7 +195,6 @@ describe("POST applications", () => {
         imageUrl: null,
         notes: null,
         appliedDate: expect.any(String),
-        contactDetails: null,
         userId: expect.any(String),
       });
     },
@@ -221,7 +218,7 @@ describe("POST applications", () => {
         jobTitle: "mockTitle",
         companyName: "mockCompany",
         status: "INTERVIEW_SCHEDULED",
-        contactDetails: "mock@email.com",
+        notes: "mock@email.com",
       })
       .set("Authorization", `Bearer ${testToken}`)
       .expect(201);
@@ -267,14 +264,14 @@ describe("PUT /api/app", () => {
 
     expect(res.body.errors[0].msg).toBe("Invalid status");
   });
-  it("should return an error if contactDetails is not valid", async () => {
+  it("should return an error if notes is not valid", async () => {
     const res = await request(app)
       .put("/api/app/123")
-      .send({ contactDetails: 123 })
+      .send({ notes: 123 })
       .set("Authorization", `Bearer ${testToken}`)
       .expect(400);
 
-    expect(res.body.errors[0].msg).toBe("Invalid contact details");
+    expect(res.body.errors[0].msg).toBe("Invalid notes");
   });
   it("should return an error if imageUrl is not valid", async () => {
     const res = await request(app)
@@ -305,7 +302,7 @@ describe("PUT /api/app", () => {
       status: "APPLIED",
       imageUrl: null,
       appliedDate: "2023-12-23T00:00:00.000Z", // this is the update property
-      contactDetails: null,
+      notes: null,
     });
   });
   it.each(validStatuses)(
@@ -322,7 +319,7 @@ describe("PUT /api/app", () => {
         status: status,
         imageUrl: null,
         appliedDate: expect.any(String), // this is the update property
-        contactDetails: null,
+        notes: null,
       });
       const updatedApp = await prisma.application.findUnique({
         where: {
@@ -338,7 +335,7 @@ describe("PUT /api/app", () => {
   const validChanges = [
     { jobTitle: "changedJobTitle" },
     { companyName: "changedCompanyName" },
-    { contactDetails: "email: change@email.com" },
+    { notes: "email: change@email.com" },
     { imageUrl: "changedImageURL" },
   ];
   it.each(validChanges)(
@@ -356,7 +353,7 @@ describe("PUT /api/app", () => {
         status: "APPLIED",
         imageUrl: null,
         appliedDate: expect.any(String), // this is the update property
-        contactDetails: null,
+        notes: null,
         ...change,
       });
       const updatedApp = await prisma.application.findUnique({
@@ -367,7 +364,7 @@ describe("PUT /api/app", () => {
           status: true,
           jobTitle: true,
           companyName: true,
-          contactDetails: true,
+          notes: true,
           imageUrl: true,
         },
       });

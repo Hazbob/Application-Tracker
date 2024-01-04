@@ -23,10 +23,7 @@ export const postAppValidators = [
     ])
     .optional()
     .withMessage("Invalid status"),
-  body("contactDetails")
-    .isString()
-    .optional()
-    .withMessage("Invalid contact details"),
+  body("notes").isString().optional().withMessage("Invalid notes"),
   body("imageUrl").isString().optional().withMessage("Invalid image URL"),
 ];
 
@@ -45,10 +42,7 @@ export const putAppValidators = [
     ])
     .optional()
     .withMessage("Invalid status"),
-  body("contactDetails")
-    .isString()
-    .optional()
-    .withMessage("Invalid contact details"),
+  body("notes").isString().optional().withMessage("Invalid notes"),
   body("imageUrl").isString().optional().withMessage("Invalid image URL"),
   body("appliedDate")
     .isDate({
