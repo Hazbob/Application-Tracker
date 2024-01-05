@@ -7,10 +7,11 @@ import errorRouter from "./routes/errorRouter";
 import cors from "cors";
 
 const app = express();
-app.use(morgan("dev"));
+if (process.env.NODE_ENV !== "production") {
+  app.use(morgan("dev"));
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-console.log(process.env.DATABASE_URL);
 app.use(cors());
 app.use("/api", protect, apiRouter);
 
