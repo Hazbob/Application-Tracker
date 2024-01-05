@@ -4,13 +4,14 @@ import apiRouter from "./routes/apiRouter";
 import { protect } from "./utils/auth";
 import { createNewUser, signin } from "./controllers/user";
 import errorRouter from "./routes/errorRouter";
+import cors from "cors";
 
 const app = express();
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 console.log(process.env.DATABASE_URL);
-
+app.use(cors());
 app.use("/api", protect, apiRouter);
 
 app.post("/signup", createNewUser);
