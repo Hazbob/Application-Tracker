@@ -9,6 +9,7 @@ const app = express();
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+console.log(process.env.DATABASE_URL);
 
 app.use("/api", protect, apiRouter);
 
