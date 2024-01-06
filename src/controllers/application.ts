@@ -88,7 +88,6 @@ export async function handlePostApplication(
       data: {
         jobTitle: req.body.jobTitle,
         companyName: req.body.companyName,
-        imageUrl: req.body.imageUrl,
         userId: req.user.id,
         notes: req.body.notes,
         status: req.body.status,
