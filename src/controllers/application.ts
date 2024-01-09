@@ -39,7 +39,10 @@ export async function handleEditApplication(
     if (!updateApplication) {
       throw new Error("Error updating application");
     }
-    res.status(200).send({ data: updateApplication });
+    res
+      .status(200)
+      .set("Content-Type", "application/json")
+      .send({ data: updateApplication });
   } catch (error) {
     next(error);
   }
@@ -68,7 +71,10 @@ export async function handleGetApplication(
     if (applications.length === 0) {
       throw new Error("No applications found");
     } else {
-      return res.status(200).send({ data: applications });
+      return res
+        .status(200)
+        .set("Content-Type", "application/json")
+        .send({ data: applications });
     }
   } catch (error) {
     next(error);
@@ -97,7 +103,10 @@ export async function handlePostApplication(
     if (!application) {
       throw new Error("Error adding new application");
     }
-    return res.status(201).send({ data: application });
+    return res
+      .status(201)
+      .set("Content-Type", "application/json")
+      .send({ data: application });
   } catch (error) {
     next(error);
   }
@@ -106,7 +115,10 @@ export async function handlePostApplication(
 export async function handleDeleteApplication(req, res, next) {
   const applicationId = req.params.id;
   if (!applicationId || typeof applicationId !== "string") {
-    return res.status(400).send("Invalid application ID");
+    return res
+      .status(400)
+      .set("Content-Type", "application/json")
+      .send("Invalid application ID");
   }
   try {
     const deletedApplication = await prisma.application.delete({
