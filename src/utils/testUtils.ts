@@ -1,5 +1,4 @@
 import { createNewUser } from "../controllers/user";
-import prisma from "../db";
 export async function generateJWTForTest() {
   const req = { body: { username: "mockUser", password: "mockUser" } };
   const res = {

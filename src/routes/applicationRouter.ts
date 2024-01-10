@@ -1,5 +1,4 @@
-import { Router, Response, application } from "express";
-import prisma from "../db";
+import { Router } from "express";
 
 import {
   checkNotEmptyBody,

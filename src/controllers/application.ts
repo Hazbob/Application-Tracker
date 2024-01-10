@@ -1,45 +1,30 @@
 import { UserRequest } from "../types/types";
-import { Response, NextFunction, application } from "express";
-import prisma from "../db";
-import formatDateStringToISO from "../utils/api.utils";
-import app from "../server";
+import { Response, NextFunction } from "express";
+import {
+  deleteApplication,
+  getApplications,
+  postApplications,
+  updateApplication,
+} from "../models/application.model";
 /*
  *
  * PUT application handler*/
 export async function handleEditApplication(
   req: UserRequest,
   res: Response,
-  next,
+  next: NextFunction,
 ) {
   const applicationId = req.params.id;
   try {
-    const updateApplication = await prisma.application.update({
-      where: {
-        id: applicationId,
-        userId: req.user.id,
-      },
-      select: {
-        jobTitle: true,
-        companyName: true,
-        status: true,
-        imageUrl: true,
-        appliedDate: true,
-        notes: true,
-      },
-      data: {
-        jobTitle: req.body.jobTitle,
-        companyName: req.body.companyName,
-        status: req.body.status,
-        notes: req.body.notes,
-        imageUrl: req.body.imageUrl,
-        appliedDate: formatDateStringToISO(req.body.appliedDate),
-      },
-    });
+    const updatedApplication = await updateApplication(req, applicationId);
 
-    if (!updateApplication) {
+    if (!updatedApplication) {
       throw new Error("Error updating application");
     }
-    res.status(200).send({ data: updateApplication });
+    res
+      .status(200)
+      .set("Content-Type", "application/json")
+      .send({ data: updatedApplication });
   } catch (error) {
     next(error);
   }
@@ -53,23 +38,14 @@ export async function handleGetApplication(
   next: NextFunction,
 ) {
   try {
-    const applications = await prisma.application.findMany({
-      where: { userId: req.user.id },
-      select: {
-        id: true,
-        jobTitle: true,
-        companyName: true,
-        appliedDate: true,
-        imageUrl: true,
-        notes: true,
-        status: true,
-      },
-    });
+    const applications = await getApplications(req);
     if (applications.length === 0) {
       throw new Error("No applications found");
-    } else {
-      return res.status(200).send({ data: applications });
     }
+    return res
+      .status(200)
+      .set("Content-Type", "application/json")
+      .send({ data: applications });
   } catch (error) {
     next(error);
   }
@@ -83,38 +59,36 @@ export async function handlePostApplication(
   next: NextFunction,
 ) {
   try {
-    if (!req.user.id) res.status(401).send({ message: "Not Authorised" });
-    const application = await prisma.application.create({
-      data: {
-        jobTitle: req.body.jobTitle,
-        companyName: req.body.companyName,
-        userId: req.user.id,
-        notes: req.body.notes,
-        status: req.body.status,
-      },
-    });
-
+    if (!req.user.id) {
+      throw new Error("Not Authorised");
+    }
+    const application = await postApplications(req);
     if (!application) {
       throw new Error("Error adding new application");
     }
-    return res.status(201).send({ data: application });
+    return res
+      .status(201)
+      .set("Content-Type", "application/json")
+      .send({ data: application });
   } catch (error) {
     next(error);
   }
 }
 
-export async function handleDeleteApplication(req, res, next) {
+export async function handleDeleteApplication(
+  req: UserRequest,
+  res: Response,
+  next: NextFunction,
+) {
   const applicationId = req.params.id;
   if (!applicationId || typeof applicationId !== "string") {
-    return res.status(400).send("Invalid application ID");
+    return res
+      .status(400)
+      .set("Content-Type", "application/json")
+      .send({ error: "Invalid application ID" });
   }
   try {
-    const deletedApplication = await prisma.application.delete({
-      where: {
-        id: applicationId,
-        userId: req.user.id,
-      },
-    });
+    const deletedApplication = await deleteApplication(req, applicationId);
     if (!deletedApplication) {
       throw new Error("Error deleting application");
     }

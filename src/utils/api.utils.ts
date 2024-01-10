@@ -1,4 +1,4 @@
-const { format, parse } = require("date-fns");
+import { format, parse } from "date-fns";
 type DateString =
   `${number}${number}/${number}${number}/${number}${number}${number}${number}`;
 
