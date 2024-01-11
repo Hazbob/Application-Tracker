@@ -16,6 +16,7 @@ const validStatuses = [
 let applicationId: string;
 let testToken: string;
 let secondApplicationId: string;
+let queryApplicationId: string;
 beforeEach(async () => {
   await prisma.application.deleteMany({});
   await prisma.user.deleteMany({});
@@ -23,6 +24,7 @@ beforeEach(async () => {
   applicationId = seedData.applicationId;
   testToken = seedData.testToken;
   secondApplicationId = seedData.secondApplicationId;
+  queryApplicationId = seedData.queryApplicaitonId;
 
   // testToken = await generateJWTForTest();
 });
@@ -435,6 +437,26 @@ describe("GET /api/app - this should get all applications of the logged in user"
     });
     //compares logged-in user to user attached to application
     expect(application.userId).toBe(user.id); // checks the userId on the application is same as user the token belongs to
+  });
+  it("should return an error if there is an invalid status query passed", async () => {
+    //gets applications
+    const res = await request(app)
+      .get("/api/app?status=adwuadgadg")
+      .set("Authorization", `Bearer ${testToken}`)
+      .expect(400);
+    expect(res.body.errors[0].msg).toBe("Invalid value");
+  });
+  it("should return applications with only the passed status", async () => {
+    //gets applications
+    const res = await request(app)
+      .get("/api/app?status=OFFER_DECLINED")
+      .set("Authorization", `Bearer ${testToken}`)
+      .expect(200);
+    //in this test case we know there to only be two applications so i can assert returned amount of applications
+    expect(res.body.data.length).toBe(1);
+    expect(res.body.data[0]).toMatchObject({
+      status: "OFFER_DECLINED",
+    });
   });
 });
 

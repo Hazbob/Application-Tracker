@@ -1,4 +1,4 @@
-import { body, param, validationResult } from "express-validator";
+import { body, param, query, validationResult } from "express-validator";
 
 export const postAppValidators = [
   body("jobTitle")
@@ -62,6 +62,20 @@ export const checkNotEmptyBody = body().custom((value, { req }) => {
   }
   return true;
 });
+
+export const getAppValidators = [
+  query("status")
+    .optional()
+    .isIn([
+      "APPLIED",
+      "INTERVIEW_SCHEDULED",
+      "INTERVIEW_COMPLETED",
+      "SKILL_ASSESSMENT",
+      "OFFER_ACCEPTED",
+      "OFFER_DECLINED",
+      "WITHDRAWN",
+    ]),
+];
 
 export function handlePostAppVal(req, res, next) {
   const errors = validationResult(req);

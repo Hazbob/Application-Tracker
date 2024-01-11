@@ -30,10 +30,13 @@ export async function updateApplication(req, applicationId) {
   }
 }
 
-export async function getApplications(req) {
+export async function getApplications(req, status) {
   try {
     const applications = await prisma.application.findMany({
-      where: { userId: req.user.id },
+      where: {
+        userId: req.user.id,
+        status: status,
+      },
       select: {
         id: true,
         jobTitle: true,
