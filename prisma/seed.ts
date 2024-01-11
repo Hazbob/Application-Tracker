@@ -38,9 +38,19 @@ export default async function seed() {
     },
   });
 
+  const queryApplication = await prisma.application.create({
+    data: {
+      jobTitle: "statusTest",
+      companyName: "StatusTestCompany",
+      userId: user.id,
+      status: "OFFER_DECLINED",
+    },
+  });
+
   return {
     testToken: testToken,
     applicationId: application.id,
     secondApplicationId: secondApplication.id,
+    queryApplicaitonId: queryApplication.id,
   };
 }

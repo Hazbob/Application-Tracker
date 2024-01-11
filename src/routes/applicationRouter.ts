@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   checkNotEmptyBody,
+  getAppValidators,
   handlePostAppVal,
   idParamValidators,
   postAppValidators,
@@ -31,7 +32,12 @@ applicationRouter.post(
 /*
  * GET applications : this retrieves the applications belonging to the logged in user
  * */
-applicationRouter.get("/", handleGetApplication);
+applicationRouter.get(
+  "/",
+  getAppValidators,
+  handlePostAppVal,
+  handleGetApplication,
+);
 /*
  * PUT route for updating existing Job Applications*/
 applicationRouter.put(

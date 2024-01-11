@@ -38,7 +38,9 @@ export async function handleGetApplication(
   next: NextFunction,
 ) {
   try {
-    const applications = await getApplications(req);
+    const { status } = req.query;
+
+    const applications = await getApplications(req, status);
     if (applications.length === 0) {
       throw new Error("No applications found");
     }
