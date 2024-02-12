@@ -3,7 +3,7 @@ import app from "../src/server";
 import prisma from "../src/db";
 import seed from "../prisma/seed";
 import { describe } from "node:test";
-import exp from "node:constants";
+
 const validStatuses = [
   "APPLIED",
   "INTERVIEW_SCHEDULED",
@@ -17,7 +17,7 @@ let applicationId: string;
 let testToken: string;
 let secondApplicationId: string;
 let queryApplicationId: string;
-beforeEach(async () => {
+afterEach(async () => {
   await prisma.application.deleteMany({});
   await prisma.user.deleteMany({});
   const seedData = await seed();

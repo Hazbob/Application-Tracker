@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "STAGE=test jest --runInBand",
+    "test": "STAGE=test jest  --runInBand",
     "dev": "nodemon src/index.ts",
     "build": "npm install && tsc",
     "start": "node dist/src/index.js",
